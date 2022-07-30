@@ -192,7 +192,7 @@ int performAction(struct Node *node) {
 		loadRomPreferences(CURRENT_SECTION.currentGameNode->data);
 		return 0;
 	}
-	if((currentState==SELECTING_SECTION&&(keys[BTN_UP]))) {
+	if((currentState==SELECTING_SECTION&&(keys[BTN_LEFT]))) {
 		if (currentSectionNumber!=favoritesSectionNumber && menuSectionCounter>1) {
 			currentState=SELECTING_SECTION;
 			hotKeyPressed=0;
@@ -205,7 +205,7 @@ int performAction(struct Node *node) {
 		}
 	}
 
-	if((currentState==SELECTING_SECTION&&(keys[BTN_DOWN]))) {
+	if((currentState==SELECTING_SECTION&&(keys[BTN_RIGHT]))) {
 		if (currentSectionNumber!=favoritesSectionNumber) {
 			currentState=SELECTING_SECTION;
 			hotKeyPressed=0;
@@ -275,7 +275,7 @@ int performAction(struct Node *node) {
 			}
 			return 0;
 		}
-		if (keys[BTN_R1]) {
+		if (keys[BTN_L2]) {
 			int number = CURRENT_GAME_NUMBER;
 			if (fullscreenMode) {
 				fullscreenMode=0;
@@ -302,19 +302,60 @@ int performAction(struct Node *node) {
 			scrollUp();
 			return 1;
 		}
-		if(rom!=NULL&&keys[BTN_RIGHT]) {
+		if(rom!=NULL&&keys[BTN_R1]) {
 			if(fullscreenMode) {
 				resetPicModeHideMenuTimer();
 			}
 			advancePage(rom);
 			return 1;
 		}
-		if(rom!=NULL&&keys[BTN_LEFT]) {
+		if(rom!=NULL&&keys[BTN_L1]) {
 			if(fullscreenMode) {
 				resetPicModeHideMenuTimer();
 			}
 			rewindPage(rom);
 			return 1;
+		}
+		if(rom!=NULL&&keys[BTN_LEFT]) {
+			hotKeyPressed=0;
+			int rewinded = rewindSection(0);
+			if(rewinded) {
+				if (CURRENT_SECTION.backgroundSurface == NULL) {
+					logMessage("INFO","performAction","Loading system background");
+					CURRENT_SECTION.backgroundSurface = IMG_Load(CURRENT_SECTION.background);
+					resizeSectionBackground(&CURRENT_SECTION);
+					logMessage("INFO","performAction","Loading system picture");
+					CURRENT_SECTION.systemPictureSurface = IMG_Load(CURRENT_SECTION.systemPicture);
+					resizeSectionSystemPicture(&CURRENT_SECTION);
+				}
+				logMessage("INFO","performAction","Rewinded, loading game list");
+				loadGameList(0);
+			}
+			if(CURRENT_SECTION.gameCount>0) {
+				scrollToGame(CURRENT_SECTION.realCurrentGameNumber);
+			}
+			//aKeyComboWasPressed=1;
+			return 0;
+		}
+		if(rom!=NULL&&keys[BTN_RIGHT]) {
+			hotKeyPressed=0;
+			int advanced = advanceSection(0);
+			if(advanced) {
+				if (CURRENT_SECTION.backgroundSurface == NULL) {
+					logMessage("INFO","performAction","Loading system background");
+					CURRENT_SECTION.backgroundSurface = IMG_Load(CURRENT_SECTION.background);
+					resizeSectionBackground(&CURRENT_SECTION);
+					CURRENT_SECTION.systemPictureSurface = IMG_Load(CURRENT_SECTION.systemPicture);
+					resizeSectionSystemPicture(&CURRENT_SECTION);
+				}
+				logMessage("INFO","performAction","Advanced, loading game list");
+				loadGameList(0);
+			}
+			if(CURRENT_SECTION.gameCount>0) {
+				scrollToGame(CURRENT_SECTION.realCurrentGameNumber);
+			}
+			//aKeyComboWasPressed=1;
+			return 0;
 		}
 	}
 	return 0;
