@@ -9,7 +9,9 @@
 #include <string.h>
 #include <time.h>
 #include <stdio.h>
-#include </home/bittboy/git/libopk/opk.h>
+#if !defined TARGET_BITTBOY && !defined TARGET_PC && !defined TARGET_OD
+#include <opk.h>
+#endif
 
 #include <sys/ioctl.h>
 #if defined(TARGET_NPG) || defined(TARGET_OD) || defined TARGET_OD_BETA
@@ -86,7 +88,7 @@ char* getRomRealName(char *romName) {
 	strcpy(nameTakenFromAlias, romName);
 	return (nameTakenFromAlias);
 }
-
+#if !defined TARGET_BITTBOY && !defined TARGET_PC && !defined TARGET_OD
 int getOPK(char *package_path, struct OPKDesktopFile *desktopFiles) {
 #ifndef TARGET_BITTBOY
 	struct OPK *opk = opk_open(package_path);
@@ -139,6 +141,7 @@ int getOPK(char *package_path, struct OPKDesktopFile *desktopFiles) {
 #endif
 	return i;
 }
+#endif
 
 char* getAlias(char *romName) {
 	char *alias = malloc(300);
@@ -756,7 +759,6 @@ int recursivelyScanDirectory(char *directory, char *files[], int i) {
 				if (e == NULL) {
 					strcat(d_name, "/");
 				}
-				free(e);
 				snprintf(path, PATH_MAX, "%s%s", directory, d_name);
 				logMessage("INFO", "recursivelyScanDirectory","Recursing to path");
 				logMessage("INFO", "recursivelyScanDirectory",path);
@@ -928,6 +930,7 @@ int theSectionHasGames(struct MenuSection *section) {
 					&& strcmp((files[i]), ".") != 0
 					&& isExtensionValid(ext, section->fileExtensions)) {
 				if (strcmp(ext, ".opk") == 0) {
+#if !defined TARGET_BITTBOY && !defined TARGET_PC && !defined TARGET_OD
 					struct OPKDesktopFile desktopFiles[10];
 					int desktopFilesCount = getOPK(files[i], desktopFiles);
 					int desktopCounter = 0;
@@ -947,6 +950,7 @@ int theSectionHasGames(struct MenuSection *section) {
 						}
 						desktopCounter++;
 					}
+#endif
 				} else {
 					value++;
 				}
@@ -1111,6 +1115,7 @@ void loadGameList(int refresh) {
 				isExtensionValid(ext,CURRENT_SECTION.fileExtensions)) {
 					//it's an opk
 					if(strcmp(ext,".opk")==0) {
+#if !defined TARGET_BITTBOY && !defined TARGET_PC && !defined TARGET_OD
 						struct OPKDesktopFile desktopFiles[10];
 						int desktopFilesCount=getOPK(files[i], desktopFiles);
 						int desktopCounter=0;
@@ -1162,6 +1167,7 @@ void loadGameList(int refresh) {
 							desktopCounter++;
 						}
 						loadedFiles++;
+#endif
 					}
 					//it's not an opk
 					else {

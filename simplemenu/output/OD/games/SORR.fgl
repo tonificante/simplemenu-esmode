@@ -1,0 +1,6 @@
+title=Streets Of Rage Remake v5.1
+description=sorr game
+#exec=/mnt/games/sorr/run.dge
+exec=/media/data/apps/SORRv51.opk
+clock=702
+selectorbrowser=true

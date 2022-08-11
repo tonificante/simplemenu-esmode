@@ -1,17 +1,17 @@
 #!/bin/sh
-cd /home/bittboy/git/invoker/invoker
+cd ~/git/invoker/invoker
 make clean
-make PLATFORM=RG-350
-cp /home/bittboy/git/invoker/invoker/invoker.dge /home/bittboy/git/simplemenu/simplemenu/output/invoker.dge
-cd /home/bittboy/git/simplemenu/simplemenu/
+make PLATFORM=OD
+cp ~/git/invoker/invoker/invoker.dge ~/git/simplemenu-esmode/simplemenu/output/invoker.dge
+cd ~/git/simplemenu-esmode/simplemenu/
 make clean
-make PLATFORM=RG-350
+make PLATFORM=OD
 cd output
-./make_opk.sh
+./make_opk.sh OD
 while true; do
     read -p "Transfer?" yn
     case $yn in
-        [Yy]* ) scp SimpleMenu.opk root@10.1.1.2:/media/data/apps/SimpleMenu-RG-350.opk; break;;
+        [Yy]* ) scp SimpleMenu.opk root@10.1.1.2:/media/data/apps/SimpleMenu-OD.opk; break;;
         [Nn]* ) exit;;
         * ) echo "Please answer yes or no.";;
     esac

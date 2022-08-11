@@ -1,0 +1,2 @@
+title=Network
+exec=/usr/bin/od-network-config

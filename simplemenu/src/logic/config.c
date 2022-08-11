@@ -123,11 +123,13 @@ int isLaunchAtBoot(char *romName) {
 		return 0;
 	}
 //	myGetLine(line, len, fp);
-	getline(&line, &len, fp);
-	line[strlen(line)-1] = '\0';
-	if (!strcmp(line,romName)) {
-		fclose(fp);
-		return 1;
+	ssize_t byteCount = getline(&line, &len, fp);
+	if (byteCount > 0) {
+		line[strlen(line)-1] = '\0';
+		if (!strcmp(line,romName)) {
+			fclose(fp);
+			return 1;
+		}
 	}
 	fclose(fp);
 	return 0;
@@ -195,33 +197,46 @@ struct AutostartRom *getLaunchAtBoot() {
 //	fprintf(fp,"%s", rom->preferences.emulatorDir);
 //	fprintf(fp,"%s", rom->preferences.frequenc
 	struct Rom *rom = malloc(sizeof(struct Rom));
+	ssize_t byteCount;
 //	myGetLine(line, len, fp);
-	getline(&line, &len, fp);
-	rom->name=strdup(line);
+	byteCount = getline(&line, &len, fp);
+	if (byteCount > 0) {
+		rom->name=strdup(line);
+	}
 
 //	myGetLine(line, len, fp);
-	getline(&line, &len, fp);
-	rom->directory=strdup(line);
+	byteCount = getline(&line, &len, fp);
+	if (byteCount > 0) {
+		rom->directory=strdup(line);
+	}
 
 //	myGetLine(line, len, fp);
-	getline(&line, &len, fp);
-	rom->alias=strdup(line);
+	byteCount = getline(&line, &len, fp);
+	if (byteCount > 0) {
+		rom->alias=strdup(line);
+	}
 
 //	myGetLine(line, len, fp);
-	getline(&line, &len, fp);
-	rom->isConsoleApp=atoifgl(line);
+	byteCount = getline(&line, &len, fp);
+	if (byteCount > 0) {
+		rom->isConsoleApp=atoifgl(line);
+	}
 
 	loadRomPreferences(rom);
 	struct AutostartRom *autostartRom = malloc(sizeof(struct AutostartRom));
 	autostartRom->rom = rom;
 
 //	myGetLine(line, len, fp);
-	getline(&line, &len, fp);
-	autostartRom->emulatorDir = strdup(line);
+	byteCount = getline(&line, &len, fp);
+	if (byteCount > 0) {
+		autostartRom->emulatorDir = strdup(line);
+	}
 
 //	myGetLine(line, len, fp);
-	getline(&line, &len, fp);
-	autostartRom->emulator = strdup(line);
+	byteCount = getline(&line, &len, fp);
+	if (byteCount > 0) {
+		autostartRom->emulator = strdup(line);
+	}
 //	printf("%s%s%s%d\n", rom->name, rom->directory, rom->alias, rom->isConsoleApp);
 	fclose(fp);
 	return autostartRom;
@@ -694,7 +709,10 @@ void loadRomPreferences(struct Rom *rom) {
 	char *configurations[4];
 	char *ptr;
 //	myGetLine(line, len, fp);
-	getline(&line, &len, fp);
+	ssize_t byteCount = getline(&line, &len, fp);
+	if (byteCount == 0) {
+		return;
+	}
 	ptr = strtok(line, ";");
 	int i=0;
 	while(ptr != NULL) {

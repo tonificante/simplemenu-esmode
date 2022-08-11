@@ -4,7 +4,7 @@ OPK_NAME="SimpleMenu-${1}.opk"
 
 echo ${OPK_NAME}
 
-if [ "$1" = "OD" ] || [ "$1" = "PG2" ] || [ "$1" = "OD-BETA" ]; then
+if [ "$1" = "OD" ] || [ "$1" = "NPG" ] || [ "$1" = "OD-BETA" ]; then
     var="gcw0";
 else
     var="retrofw";
@@ -16,7 +16,8 @@ else
     user_name="root";
 fi
 
-cd /home/bittboy/git/simplemenu/simplemenu/
+: '
+cd ~/git/simplemenu-esmode/simplemenu/
 
 if [ "$1" = "OD" ]; then
     make clean
@@ -24,7 +25,7 @@ if [ "$1" = "OD" ]; then
 elif [ "$1" = "OD-BETA" ]; then
     make clean
     make PLATFORM=OD-BETA
-elif [ "$1" = "PG2" ]; then
+elif [ "$1" = "NPG" ]; then
     make clean
     make PLATFORM=NPG
 elif [ "$1" = "RFW" ]; then
@@ -32,7 +33,7 @@ elif [ "$1" = "RFW" ]; then
     make PLATFORM=RFW
 fi
 
-cd /home/bittboy/git/invoker/invoker/
+cd ~/git/invoker/invoker/
 
 if [ "$1" = "OD" ]; then
     make clean
@@ -40,7 +41,7 @@ if [ "$1" = "OD" ]; then
 elif [ "$1" = "OD-BETA" ]; then
     make clean
     make PLATFORM=OD-BETA
-elif [ "$1" = "PG2" ]; then
+elif [ "$1" = "NPG" ]; then
     make clean
     make PLATFORM=NPG
 elif [ "$1" = "RFW" ]; then
@@ -48,10 +49,10 @@ elif [ "$1" = "RFW" ]; then
     make PLATFORM=RFW
 fi
 
-cp invoker.dge /home/bittboy/git/simplemenu/simplemenu/output
+cp invoker.dge ~/git/simplemenu-esmode/simplemenu/output
 
-cd /home/bittboy/git/simplemenu/simplemenu/output
-
+cd ~/git/simplemenu-esmode/simplemenu/output
+'
 cat>default.${var}.desktop<<EOF
 [Desktop Entry]
 Name=SimpleMenu
@@ -76,27 +77,27 @@ FLIST="${FLIST} invoker.dge"
 FLIST="${FLIST} simplemenu"
 FLIST="${FLIST} usb.png"
 FLIST="${FLIST} simplemenu.png"
-if [ "$1" = 'OD' ] || [ "$1" = 'PG2' ] || [ "$1" = "OD-BETA" ]; then
+if [ "$1" = 'OD' ] || [ "$1" = 'NPG' ] || [ "$1" = "OD-BETA" ]; then
     FLIST="${FLIST} default.gcw0.desktop"
 else
     FLIST="${FLIST} default.retrofw.desktop"
 fi
 
-rm -f ${OPK_NAME} > log.txt
-mksquashfs ${FLIST} ${OPK_NAME} -all-root -no-xattrs -noappend -no-exports >> log.txt
+rm -f ${OPK_NAME} #> log.txt
+mksquashfs ${FLIST} ${OPK_NAME} -all-root -no-xattrs -noappend -no-exports #>> log.txt
 
-if [ "$1" = 'OD' ] || [ "$1" = 'PG2' ] || [ "$1" = 'OD-BETA' ]; then
-    cat default.gcw0.desktop >> log.txt
-    rm -f default.gcw0.desktop >> log.txt
-    while true; do
-        read -p "Transfer?" yn
-        case $yn in
-            [Yy]* ) scp SimpleMenu-${1}.opk $user_name@10.1.1.2:/media/sdcard/apps/SimpleMenu-${1}.opk; break;;
-            [Nn]* ) exit;;
-            * ) echo "Please answer yes or no.";;
-        esac
-    done
+if [ "$1" = 'OD' ] || [ "$1" = 'NPG' ] || [ "$1" = 'OD-BETA' ]; then
+    #cat default.gcw0.desktop >> log.txt
+    rm -f default.gcw0.desktop #>> log.txt
+    #while true; do
+    #    read -p "Transfer?" yn
+    #    case $yn in
+    #        [Yy]* ) scp SimpleMenu-${1}.opk $user_name@10.1.1.2:/media/sdcard/apps/SimpleMenu-${1}.opk; break;;
+    #        [Nn]* ) exit;;
+    #        * ) echo "Please answer yes or no.";;
+    #    esac
+    #done
 else
-    cat default.retrofw.desktop >> log.txt
-    rm -f default.retrofw.desktop >> log.txt
+    #cat default.retrofw.desktop >> log.txt
+    rm -f default.retrofw.desktop #>> log.txt
 fi

@@ -1,0 +1,2 @@
+title=System Info
+exec=/bin/busybox sh -c '/usr/bin/dialog --ok-label "Press START to exit" --no-shadow --msgbox "`/usr/bin/system_info`" 240 320'

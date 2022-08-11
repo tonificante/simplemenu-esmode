@@ -5,7 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#if defined TARGET_OD || defined TARGET_OD_BETA
+#if defined TARGET_OD_BETA
 #include <shake.h>
 #endif
 
@@ -465,7 +465,7 @@ void showOrHideFavorites() {
 void removeFavorite() {
 	favoritesChanged=1;
 	if (favoritesSize>0) {
-		#if defined TARGET_OD || defined TARGET_OD_BETA
+		#if defined TARGET_OD_BETA
 		Shake_Play(device, effect_id1);
 		#endif	
 		for (int i=CURRENT_GAME_NUMBER;i<favoritesSize;i++) {
@@ -521,7 +521,7 @@ void markAsFavorite(struct Rom *rom) {
 	if (favoritesSize<FAVORITES_SIZE) {
 		if (!doesFavoriteExist(rom->name)) {
 			resetHideHeartTimer();
-			#if defined TARGET_OD || defined TARGET_OD_BETA
+			#if defined TARGET_OD_BETA
 			Shake_Play(device, effect_id);
 			msleep(200);
 			Shake_Play(device, effect_id);

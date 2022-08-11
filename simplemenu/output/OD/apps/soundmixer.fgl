@@ -1,0 +1,2 @@
+title=Sound Mixer
+exec=/usr/bin/alsamixer

@@ -18,7 +18,7 @@
 #include "../headers/hashtable.h"
 #include "../headers/constants.h"
 
-#if defined TARGET_OD || defined TARGET_OD_BETA
+#if defined TARGET_OD_BETA
 #include <shake.h>
 #endif
 
@@ -309,7 +309,7 @@ extern int BTN_R1;
 extern int BTN_L2;
 extern int BTN_R2;
 
-#if defined TARGET_OD || defined TARGET_OD_BETA
+#if defined TARGET_OD_BETA
 extern Shake_Device *device;
 extern Shake_Effect effect;
 extern int effect_id;

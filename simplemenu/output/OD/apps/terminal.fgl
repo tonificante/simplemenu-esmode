@@ -1,0 +1,2 @@
+title=Terminal
+exec=/bin/busybox sh -c 'clear; echo "Useful for testing graphical apps from telnet."; echo ""; echo "(Press START to exit)"; read'

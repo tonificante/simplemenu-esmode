@@ -11,7 +11,7 @@
 #include "../headers/system_logic.h"
 #include "../headers/globals.h"
 #include "../headers/utils.h"
-#if defined TARGET_OD || defined TARGET_OD_BETA
+#if defined TARGET_OD_BETA
 #include <shake.h>
 #endif
 
@@ -115,7 +115,7 @@ void initSuspendTimer() {
 
 void HW_Init()
 {
-	#if defined TARGET_OD || defined TARGET_OD_BETA
+	#if defined TARGET_OD_BETA
 	Shake_Init();
 	device = Shake_Open(0);
 	Shake_SimplePeriodic(&effect, SHAKE_PERIODIC_SQUARE, 0.5, 0.1, 0.05, 0.1);
@@ -142,11 +142,11 @@ void rumble() {
 
 int getBatteryLevel() {
 	int max_voltage;
-	int charging=0;
 	int voltage_now;
 	int total;
 #if defined (TARGET_OD_BETA)
 	int min_voltage;
+	int charging = 0;
 	FILE *f = fopen("/sys/class/power_supply/jz-battery/voltage_max_design", "r");
 	fscanf(f, "%i", &max_voltage);
 	fclose(f);
@@ -174,6 +174,7 @@ int getBatteryLevel() {
 	return total;
 #elif defined (TARGET_OD)
 	int min_voltage;
+	int charging = 0;
 	FILE *f = fopen("/sys/class/power_supply/battery/voltage_max_design", "r");
 	fscanf(f, "%i", &max_voltage);
 	fclose(f);
@@ -186,6 +187,11 @@ int getBatteryLevel() {
 	fscanf(f, "%i", &voltage_now);
 	fclose(f);
 
+	// not sure if following lines work
+	f = fopen("/sys/class/power_supply/usb/online", "r");
+	fscanf(f, "%i", &charging);
+	fclose(f);
+
 //	total = ((voltage_now-min_voltage)*100)/(max_voltage-min_voltage);
 	total = (voltage_now - min_voltage) * 6 / (max_voltage - min_voltage);
 	if (charging==1) {
@@ -196,6 +202,11 @@ int getBatteryLevel() {
 	}
 	return total;
 #else
+	// check if battery file exists, as desktop computers doesn't have a battery
+	if (access("/sys/class/power_supply/BAT0/charge_full", F_OK) != 0) {
+		// desktop computer, just return full battery status
+		return 6;
+	}
 	FILE *f = fopen("/sys/class/power_supply/BAT0/charge_full", "r");
 	int ret = fscanf(f, "%i", &max_voltage);
 	if (ret==-1) {

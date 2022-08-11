@@ -18,7 +18,7 @@
 #include <SDL/SDL_video.h>
 #include "../headers/screen.h"
 
-#if defined TARGET_OD || defined TARGET_OD_BETA
+#if defined TARGET_OD_BETA
 #include <shake.h>
 #endif
 
@@ -1240,7 +1240,7 @@ void freeResources() {
 	freeFonts();
 	freeSettingsFonts();
 	TTF_Quit();
-#if defined TARGET_OD || defined TARGET_OD_BETA
+#if defined TARGET_OD_BETA
 	Shake_Stop(device, effect_id);
 	Shake_EraseEffect(device, effect_id);
 	Shake_Close(device);

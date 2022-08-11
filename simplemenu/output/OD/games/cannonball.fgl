@@ -1,0 +1,6 @@
+title=Cannonball
+description=Outrun engine
+exec=/mnt/games/cannonball/cannonball
+#exec=/media/RG350/apps/cannonball.opk
+clock=702
+selectorbrowser=true
