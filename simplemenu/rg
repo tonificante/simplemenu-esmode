@@ -11,7 +11,7 @@ cd output
 while true; do
     read -p "Transfer?" yn
     case $yn in
-        [Yy]* ) scp SimpleMenu.opk root@10.1.1.2:/media/data/apps/SimpleMenu-OD.opk; break;;
+        [Yy]* ) scp SimpleMenu-OD.opk root@10.1.1.2:/media/RG350/apps/SimpleMenu-OD.opk; break;;
         [Nn]* ) exit;;
         * ) echo "Please answer yes or no.";;
     esac
