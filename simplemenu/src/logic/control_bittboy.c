@@ -142,7 +142,7 @@ int performAction(struct Node *node) {
 			if(keys[BTN_DOWN]) {
 //				currentState=(fullscreenMode==1?SELECTING_SECTION:BROWSING_GAME_LIST);
 				hotKeyPressed=0;
-				int advanced = advanceSection(0);
+				int advanced = advanceSection();
 				if(advanced) {
 					if (CURRENT_SECTION.backgroundSurface == NULL) {
 						logMessage("INFO","performAction","Loading system background");
@@ -163,7 +163,7 @@ int performAction(struct Node *node) {
 			if(keys[BTN_UP]) {
 //				currentState=fullscreenMode==1?SELECTING_SECTION:BROWSING_GAME_LIST;
 				hotKeyPressed=0;
-				int rewinded = rewindSection(0);
+				int rewinded = rewindSection();
 				if(rewinded) {
 					if (CURRENT_SECTION.backgroundSurface == NULL) {
 						logMessage("INFO","performAction","Loading system background");
@@ -196,7 +196,7 @@ int performAction(struct Node *node) {
 		if (currentSectionNumber!=favoritesSectionNumber && menuSectionCounter>1) {
 			currentState=SELECTING_SECTION;
 			hotKeyPressed=0;
-			rewindSection(1);
+			rewindSection();
 //			if(currentSectionNumber!=favoritesSectionNumber&&autoHideLogos&&returnValue) {
 //				resetPicModeHideLogoTimer();
 //			} else if (!returnValue) {
@@ -209,7 +209,7 @@ int performAction(struct Node *node) {
 		if (currentSectionNumber!=favoritesSectionNumber) {
 			currentState=SELECTING_SECTION;
 			hotKeyPressed=0;
-			advanceSection(1);
+			advanceSection();
 //			if(currentSectionNumber!=favoritesSectionNumber&&autoHideLogos&&returnValue) {
 //				resetPicModeHideLogoTimer();
 //			}else if (!returnValue) {

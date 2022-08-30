@@ -142,7 +142,7 @@ int performAction(struct Node *node) {
 			if(keys[BTN_DOWN]) {
 //				currentState=(fullscreenMode==1?SELECTING_SECTION:BROWSING_GAME_LIST);
 				hotKeyPressed=0;
-				int advanced = advanceSection(0);
+				int advanced = advanceSection();
 				if(advanced) {
 					if (CURRENT_SECTION.backgroundSurface == NULL) {
 						logMessage("INFO","performAction","Loading system background");
@@ -163,7 +163,7 @@ int performAction(struct Node *node) {
 			if(keys[BTN_UP]) {
 //				currentState=fullscreenMode==1?SELECTING_SECTION:BROWSING_GAME_LIST;
 				hotKeyPressed=0;
-				int rewinded = rewindSection(0);
+				int rewinded = rewindSection();
 				if(rewinded) {
 					if (CURRENT_SECTION.backgroundSurface == NULL) {
 						logMessage("INFO","performAction","Loading system background");
@@ -192,38 +192,16 @@ int performAction(struct Node *node) {
 		loadRomPreferences(CURRENT_SECTION.currentGameNode->data);
 		return 0;
 	}
-	if((currentState==SELECTING_SECTION&&(keys[BTN_LEFT]))) {
-		if (currentSectionNumber!=favoritesSectionNumber && menuSectionCounter>1) {
-			currentState=SELECTING_SECTION;
-			hotKeyPressed=0;
-			rewindSection(1);
-//			if(currentSectionNumber!=favoritesSectionNumber&&autoHideLogos&&returnValue) {
-//				resetPicModeHideLogoTimer();
-//			} else if (!returnValue) {
-//				currentState=BROWSING_GAME_LIST;
-//			}
-		}
-	}
-
-	if((currentState==SELECTING_SECTION&&(keys[BTN_RIGHT]))) {
-		if (currentSectionNumber!=favoritesSectionNumber) {
-			currentState=SELECTING_SECTION;
-			hotKeyPressed=0;
-			advanceSection(1);
-//			if(currentSectionNumber!=favoritesSectionNumber&&autoHideLogos&&returnValue) {
-//				resetPicModeHideLogoTimer();
-//			}else if (!returnValue) {
-//				currentState=BROWSING_GAME_LIST;
-//			}
-		}
+	if (currentState == SELECTING_SECTION && keys[BTN_LEFT]) {
+		hotKeyPressed = 0;
+		rewindSection();
 		return 0;
 	}
 
-	if (currentState!=SELECTING_EMULATOR&&!hotKeyPressed) {
-		if (keys[BTN_Y]) {
-			showOrHideFavorites();
-			return 0;
-		}
+	if (currentState == SELECTING_SECTION && keys[BTN_RIGHT]) {
+		hotKeyPressed = 0;
+		advanceSection();
+		return 0;
 	}
 
 	if (currentState!=SELECTING_EMULATOR&&!hotKeyPressed&&!(currentState==SELECTING_SECTION)) {
@@ -318,7 +296,7 @@ int performAction(struct Node *node) {
 		}
 		if(rom!=NULL&&keys[BTN_LEFT]) {
 			hotKeyPressed=0;
-			int rewinded = rewindSection(0);
+			int rewinded = rewindSection();
 			if(rewinded) {
 				if (CURRENT_SECTION.backgroundSurface == NULL) {
 					logMessage("INFO","performAction","Loading system background");
@@ -339,7 +317,7 @@ int performAction(struct Node *node) {
 		}
 		if(rom!=NULL&&keys[BTN_RIGHT]) {
 			hotKeyPressed=0;
-			int advanced = advanceSection(0);
+			int advanced = advanceSection();
 			if(advanced) {
 				if (CURRENT_SECTION.backgroundSurface == NULL) {
 					logMessage("INFO","performAction","Loading system background");

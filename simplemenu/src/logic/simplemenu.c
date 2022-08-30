@@ -163,9 +163,9 @@ void processEvents() {
 //				refreshScreen();
 			}
 		} else if (event.type==getKeyUp()) {
-			if (currentState==BROWSING_GAME_LIST &&  previousState != SETTINGS_SCREEN && previousState != SELECTING_EMULATOR ) {
+			if (currentState==BROWSING_GAME_LIST && previousState != SETTINGS_SCREEN && previousState != SELECTING_EMULATOR ) {
 				if(((int)event.key.keysym.sym)==BTN_B) {
-					if (!aKeyComboWasPressed&&currentSectionNumber!=favoritesSectionNumber) {
+					if (!aKeyComboWasPressed) {
 						currentState=SELECTING_SECTION;
 					}
 					hotKeyPressed=0;
@@ -187,7 +187,7 @@ void processEvents() {
 //						refreshScreen();
 					}
 				}
-			} else 	if (currentState==SELECTING_SECTION) {
+			} else if (currentState==SELECTING_SECTION) {
 				if(((int)event.key.keysym.sym)==BTN_B) {
 					if (aKeyComboWasPressed==0) {
 						if (currentSectionNumber!=favoritesSectionNumber&&sectionGroupCounter>1) {

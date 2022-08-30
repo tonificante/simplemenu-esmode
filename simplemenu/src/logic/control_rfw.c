@@ -138,7 +138,7 @@ int performAction(struct Node *node) {
 			if(keys[BTN_RIGHT]) {
 				currentState=fullscreenMode==1?SELECTING_SECTION:BROWSING_GAME_LIST;
 				hotKeyPressed=0;
-				int advanced = advanceSection(0);
+				int advanced = advanceSection();
 				if(advanced) {
 					if (CURRENT_SECTION.backgroundSurface == NULL) {
 						logMessage("INFO","performAction","Loading system background");
@@ -158,7 +158,7 @@ int performAction(struct Node *node) {
 			if(keys[BTN_LEFT]) {
 				currentState=fullscreenMode==1?SELECTING_SECTION:BROWSING_GAME_LIST;
 				hotKeyPressed=0;
-				int rewinded = rewindSection(0);
+				int rewinded = rewindSection();
 				if(rewinded) {
 					if (CURRENT_SECTION.backgroundSurface == NULL) {
 						logMessage("INFO","performAction","Loading system background");
@@ -190,7 +190,7 @@ int performAction(struct Node *node) {
 		if (currentSectionNumber!=favoritesSectionNumber) {
 			currentState=SELECTING_SECTION;
 			hotKeyPressed=0;
-			int returnValue = rewindSection(1);
+			int returnValue = rewindSection();
 			if (!returnValue) {
 				currentState=BROWSING_GAME_LIST;
 			}
@@ -202,7 +202,7 @@ int performAction(struct Node *node) {
 		if (currentSectionNumber!=favoritesSectionNumber) {
 			currentState=SELECTING_SECTION;
 			hotKeyPressed=0;
-			int returnValue = advanceSection(1);
+			int returnValue = advanceSection();
 			if (!returnValue) {
 				currentState=BROWSING_GAME_LIST;
 			}

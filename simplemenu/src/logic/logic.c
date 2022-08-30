@@ -1298,6 +1298,11 @@ void determineStartingScreen(int sectionCount) {
 		favoritesSectionSelected = 1;
 		loadFavoritesSectionGameList();
 		logMessage("INFO", "determineStartingScreen", "Favorites loaded");
+		if (CURRENT_SECTION.systemLogoSurface == NULL) {
+			CURRENT_SECTION.systemLogoSurface = IMG_Load(CURRENT_SECTION.systemLogo);
+			logMessage("WARN","showOrHideFavorites","Loading system logo");
+			resizeSectionSystemLogo(&CURRENT_SECTION);
+		}
 		if (CURRENT_SECTION.backgroundSurface == NULL) {
 			logMessage("INFO","determineStartingScreen","Loading system background");
 			CURRENT_SECTION.backgroundSurface = IMG_Load(CURRENT_SECTION.background);
@@ -1324,7 +1329,7 @@ void determineStartingScreen(int sectionCount) {
 		logMessage("INFO", "determineStartingScreen", "Loading game list");
 		loadGameList(0);
 		if (CURRENT_SECTION.gameCount==0) {
-			advanceSection(0);
+			advanceSection();
 			logMessage("INFO","determineStartingScreen","Loading game list again");
 			loadGameList(0);
 //			generateError("NO GAMES FOUND!", 0);
