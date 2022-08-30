@@ -25,10 +25,11 @@ else ifeq ($(PLATFORM), OD)
 	#CFLAGS = -DTARGET_OD -DUSE_GZIP -Ofast -fdata-sections -ffunction-sections -fno-PIC -flto -Wall -Wextra -std=gnu99
 	#LIBS += -lSDL -lSDL_sound -lSDL_image -lSDL_ttf -lshake -lpthread -lopk -lz
 
+	# modified for eduardofilo's rg350_buster_buildroot docker image
 	CC = /root/git/buildroot-rg350-old-kernel/output/host/bin/mipsel-rg350-linux-uclibc-gcc
 	LINKER = /root/git/buildroot-rg350-old-kernel/output/host/bin/mipsel-rg350-linux-uclibc-gcc
-	CFLAGS = -DTARGET_OD -DUSE_GZIP -Ofast -fdata-sections -ffunction-sections -fno-PIC -flto -Wall -Wextra -std=gnu99
-	LIBS += -lSDL -lSDL_sound -lSDL_image -lSDL_ttf -lpthread -lz
+	CFLAGS = -DTARGET_OD -DUSE_GZIP -O3 -fdata-sections -ffunction-sections -fno-PIC -flto -Wall -Wextra -std=gnu99
+	LIBS += -lSDL -lSDL_image -lSDL_ttf -lpthread -lz
 else ifeq ($(PLATFORM), OD-BETA)
 	CC = /home/bittboy/Downloads/gcw0-toolchain/usr/bin/mipsel-gcw0-linux-uclibc-gcc
 	LINKER = /home/bittboy/Downloads/gcw0-toolchain/usr/bin/mipsel-gcw0-linux-uclibc-gcc
@@ -42,21 +43,23 @@ else ifeq ($(PLATFORM), NPG)
 else
 	TARGET = simplemenu-x86
 	CC = gcc
-	LINKER   = gcc
-	CFLAGS = -DTARGET_PC -DUSE_GZIP -Ofast -fdata-sections -ffunction-sections -fPIC -flto -Wall -Wextra -std=gnu99
-	LIBS += -lSDL -lasound -lSDL_image -lSDL_ttf -lpthread -lz
+	LINKER = gcc
+	CFLAGS = -DTARGET_PC -DUSE_GZIP -O3 -fdata-sections -ffunction-sections -fPIC -flto -Wall -Wextra -std=gnu99
+	# add debug capabilities for use with valgrind
+	CFLAGS += -g
+	LIBS += -lSDL -lSDL_image -lSDL_ttf -lpthread -lz
 endif
 
 # You can use Ofast too but it can be more prone to bugs, careful.
-CFLAGS +=  -I.
+CFLAGS += -I.
 LDFLAGS = -Wl,--start-group $(LIBS) -Wl,--end-group -Wl,--as-needed -Wl,--gc-sections -flto
 
 DEBUG=NO
 
 ifeq ($(DEBUG), NO)
-	CFLAGS +=  -DDEBUG -g3
+	CFLAGS += -DDEBUG -g3
 else
-	LDFLAGS	+=  -s -lm
+	LDFLAGS	+= -s -lm
 endif
 
 SRCDIR   = src/logic
