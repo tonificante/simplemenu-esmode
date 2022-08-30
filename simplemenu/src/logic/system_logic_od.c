@@ -1,7 +1,4 @@
-//for soundcard
-
 #include <fcntl.h> //for battery
-#include <linux/soundcard.h>
 #include <stdio.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
@@ -83,14 +80,10 @@ void clearTimer() {
 
 uint32_t suspend() {
 	if(timeoutValue!=0&&hdmiEnabled==0) {
-//		if (!isUSBMode) {
-			clearTimer();
-			oldCPU=currentCPU;
-			turnScreenOnOrOff(0);
-			isSuspended=1;
-//		} else {
-//			resetScreenOffTimer();
-//		}
+		clearTimer();
+		oldCPU=currentCPU;
+		turnScreenOnOrOff(0);
+		isSuspended=1;
 	}
 	return 0;
 };

@@ -1351,33 +1351,6 @@ void determineStartingScreen(int sectionCount) {
 	logMessage("INFO", "determineStartingScreen", "Found starting screen");
 }
 
-void deleteGame(struct Rom *rom) {
-	char command[300];
-	snprintf(command, sizeof(command), "rm \"%s\";", rom->name);
-	int ret = system(command);
-	if (ret == -1) {
-		generateError("FATAL ERROR", 1);
-	}
-	char *pictureWithFullPath = malloc(600);
-	char *tempGameName;
-	char *tempGameName1;
-	strcpy(pictureWithFullPath, rom->directory);
-	tempGameName = getGameName(rom->name);
-	strcat(pictureWithFullPath, mediaFolder);
-	strcat(pictureWithFullPath, "/");
-	tempGameName1 = getNameWithoutExtension(tempGameName);
-	strcat(pictureWithFullPath, tempGameName);
-	strcat(pictureWithFullPath, ".png");
-	snprintf(command, sizeof(command), "rm \"%s\";", pictureWithFullPath);
-	free(tempGameName);
-	free(tempGameName1);
-	free(pictureWithFullPath);
-	ret = system(command);
-	if (ret == -1) {
-		generateError("FATAL ERROR", 1);
-	}
-}
-
 int is43() {
 	return SCREEN_RATIO <= 1.34 && SCREEN_RATIO >= 1.33;
 }

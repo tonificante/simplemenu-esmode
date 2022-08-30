@@ -19,7 +19,6 @@ void determineStartingScreen(int sectionCount);
 int getFirstNonHiddenSection(int sectionCount);
 struct Favorite findFavorite(char *name);
 void selectRandomGame();
-void deleteGame();
 int compareFavorites(const void *s1, const void *s2);
 FILE *getCurrentSectionAliasFile();
 char *getRomRealName(char *nameWithoutExtension);

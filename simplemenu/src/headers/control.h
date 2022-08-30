@@ -6,7 +6,6 @@ int advanceSection();
 int rewindSection();
 void showPicture();
 void launchGame();
-void launchEmulator();
 void scrollUp();
 void scrollDown();
 void scrollToGame(int gameNumber);
@@ -21,7 +20,6 @@ void performGroupChoosingAction();
 void performSettingsChoosingAction();
 void performHelpAction();
 int performAction();
-void callDeleteGame(struct Rom * rom);
 void performLaunchAtBootQuitScreenChoosingAction();
 void launchAutoStartGame(struct Rom *rom, char *emuDir, char *emuExec);
 #endif

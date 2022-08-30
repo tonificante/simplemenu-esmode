@@ -247,6 +247,7 @@ void launchGame(struct Rom *rom) {
 	char tempExecDirPlusFileName[3000];
 	char tempExecFile[3000];
 	printf(" \n");
+
 	if (favoritesSectionSelected && favoritesSize > 0) {
 		struct Favorite favorite = favorites[CURRENT_GAME_NUMBER];
 		strcpy(tempExec,favorite.emulatorFolder);
@@ -294,24 +295,6 @@ void launchGame(struct Rom *rom) {
 			executeCommand(CURRENT_SECTION.emulatorDirectories[rom->preferences.emulatorDir], CURRENT_SECTION.executables[rom->preferences.emulator],rom->name, rom->isConsoleApp);
 			#endif
 		}
-	}
-}
-
-void launchEmulator(struct Rom *rom) {
-	if (favoritesSectionSelected && favoritesSize > 0) {
-		struct Favorite favorite = favorites[CURRENT_GAME_NUMBER];
-		#ifndef TARGET_PC
-		executeCommand(favorite.emulatorFolder,favorite.executable,"*", favorite.isConsoleApp);
-		#else
-		executeCommandPC(favorite.executable,"*");
-		#endif
-	} else if (rom->name!=NULL) {
-		loadRomPreferences(rom);
-		#ifndef TARGET_PC
-		executeCommand(CURRENT_SECTION.emulatorDirectories[CURRENT_SECTION.currentGameNode->data->preferences.emulatorDir], CURRENT_SECTION.executables[CURRENT_SECTION.currentGameNode->data->preferences.emulator],"*", 0);
-		#else
-		executeCommandPC(CURRENT_SECTION.executables[CURRENT_SECTION.currentGameNode->data->preferences.emulator],"*");
-		#endif
 	}
 }
 
@@ -507,13 +490,11 @@ void removeFavorite() {
 	}
 }
 
-int msleep(long msec)
-{
+int msleep(long msec) {
     struct timespec ts;
     int res;
 
-    if (msec < 0)
-    {
+    if (msec < 0) {
         errno = EINVAL;
         return -1;
     }
@@ -865,13 +846,6 @@ void performSettingsChoosingAction() {
 	else if (chosenSetting==USB_OPTION&&keys[BTN_A]) {
 		executeCommand ("./scripts/", "usb_mode_on.sh", "#", 0);
 		hotKeyPressed=0;
-//		int returnedValue = system("./scripts/usb_mode_on.sh");
-//		if (returnedValue==0) {
-////			isUSBMode = 1;
-//		} else {
-//			generateError("USB MODE  NOT AVAILABLE",0);
-//		}
-//		currentState=BROWSING_GAME_LIST;
 	}
 	#endif
 	else if (keys[BTN_B]) {
@@ -1010,7 +984,7 @@ void performChoosingAction() {
 				rom->preferences.emulatorDir=0;
 			}
 		}
-	} else	if (keys[BTN_B]) {
+	} else if (keys[BTN_B]) {
 		if (currentState!=BROWSING_GAME_LIST) {
 			int emu = CURRENT_SECTION.currentGameNode->data->preferences.emulator;
 			int emuDir = CURRENT_SECTION.currentGameNode->data->preferences.emulatorDir;
@@ -1028,23 +1002,5 @@ void performChoosingAction() {
 			previousState=SELECTING_EMULATOR;
 			currentState=BROWSING_GAME_LIST;
 		}
-	}
-}
-
-void callDeleteGame(struct Rom *rom) {
-	if (!favoritesSectionSelected) {
-		deleteGame(rom);
-		loadGameList(1);
-		while(CURRENT_SECTION.hidden) {
-			rewindSection(0);
-			loadGameList(0);
-			hideFullScreenModeMenu();
-		}
-		if(CURRENT_SECTION.currentGameInPage==countGamesInPage()) {
-			scrollUp();
-		}
-		setupDecorations();
-	} else {
-		generateError("YOU CAN'T DELETE GAMES-WHILE IN FAVORITES",0);
 	}
 }

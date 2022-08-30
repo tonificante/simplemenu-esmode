@@ -63,35 +63,12 @@ int performAction(struct Node *node) {
 			return(1);
 		}
 	}
-//	if (keys[BTN_START]&&isUSBMode) {
-//		hotKeyPressed=0;
-//		isUSBMode=0;
-//		int ret = system("./usb_mode_off.sh");
-//		if (ret==-1) {
-//			generateError("FATAL ERROR", 1);
-//		}
-//		return 0;
-//	}
 	if(itsStoppedBecauseOfAnError&&!keys[BTN_A]) {
 		return(0);
 	}
 	if(keys[BTN_B]&&!(currentState==SELECTING_SECTION)) {
 		hotKeyPressed=1;
 		if (currentState==BROWSING_GAME_LIST) {
-			if (rom!=NULL&&keys[BTN_A]) {
-				launchEmulator(rom);
-				aKeyComboWasPressed=1;
-				return 1;
-			}
-			if (rom!=NULL&&keys[BTN_X]) {
-				if (!isPicModeMenuHidden) {
-					resetPicModeHideMenuTimer();
-				}
-				callDeleteGame(rom);
-				aKeyComboWasPressed=1;
-				return 1;
-			}
-
 			if (rom!=NULL&&keys[BTN_SELECT]) {
 				int flag = 0;
 				const int GAME_FPS=60;
