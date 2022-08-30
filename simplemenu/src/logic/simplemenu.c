@@ -92,6 +92,12 @@ void initialSetup() {
 	logMessage("INFO","initialSetup","Setting CPU to base");
 	setCPU(currentCPU);
 #endif
+	
+	// play background music
+	if (SDL_Init(SDL_INIT_AUDIO) >= 0) {
+		startMusic();
+	}
+
 	setupKeys();
 	checkIfDefault();
 }

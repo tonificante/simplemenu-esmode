@@ -29,7 +29,7 @@ else ifeq ($(PLATFORM), OD)
 	CC = /root/git/buildroot-rg350-old-kernel/output/host/bin/mipsel-rg350-linux-uclibc-gcc
 	LINKER = /root/git/buildroot-rg350-old-kernel/output/host/bin/mipsel-rg350-linux-uclibc-gcc
 	CFLAGS = -DTARGET_OD -DUSE_GZIP -O3 -fdata-sections -ffunction-sections -fno-PIC -flto -Wall -Wextra -std=gnu99
-	LIBS += -lSDL -lSDL_image -lSDL_ttf -lpthread -lz
+	LIBS += -lSDL -lSDL_image -lSDL_ttf -lSDL_mixer -lpthread -lz
 else ifeq ($(PLATFORM), OD-BETA)
 	CC = /home/bittboy/Downloads/gcw0-toolchain/usr/bin/mipsel-gcw0-linux-uclibc-gcc
 	LINKER = /home/bittboy/Downloads/gcw0-toolchain/usr/bin/mipsel-gcw0-linux-uclibc-gcc
@@ -47,7 +47,7 @@ else
 	CFLAGS = -DTARGET_PC -DUSE_GZIP -O3 -fdata-sections -ffunction-sections -fPIC -flto -Wall -Wextra -std=gnu99
 	# add debug capabilities for use with valgrind
 	CFLAGS += -g
-	LIBS += -lSDL -lSDL_image -lSDL_ttf -lpthread -lz
+	LIBS += -lSDL -lSDL_image -lSDL_ttf -lSDL_mixer -lpthread -lz
 endif
 
 # You can use Ofast too but it can be more prone to bugs, careful.

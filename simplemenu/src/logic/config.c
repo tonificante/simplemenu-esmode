@@ -838,6 +838,9 @@ void loadConfig() {
 		enableLogging();
 	}
 
+	value = ini_get(config, "GENERAL", "music_path");
+	strcpy(musicPath,value);
+
 	value = ini_get(config, "GENERAL", "cache");
 	useCache = atoifgl(value);
 

@@ -8,6 +8,9 @@ void executeCommand (char *emulatorFolder, char *executable, char *fileToBeExecu
 #else
 void executeCommandPC (char *executable, char *fileToBeExecutedWithFullPath);
 #endif
+void startMusic();
+void stopMusic();
+void nextSong();
 void loadGameList(int refresh);
 void loadFavoritesSectionGameList();
 int countFiles (char* directoryName, char *fileExtensions);

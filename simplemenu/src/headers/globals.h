@@ -15,6 +15,7 @@
 #include <pthread.h>
 #include <SDL/SDL_timer.h>
 #include <SDL/SDL_image.h>
+#include <SDL/SDL_mixer.h>
 #include "../headers/hashtable.h"
 #include "../headers/constants.h"
 
@@ -58,6 +59,12 @@ extern SDL_TimerID picModeHideMenuTimer;
 extern SDL_TimerID picModeHideLogoTimer;
 extern SDL_TimerID hideHeartTimer;
 extern SDL_TimerID batteryTimer;
+extern Mix_Music *bgmusic;
+extern struct dirent **playlist;
+extern int playlistLength;
+extern int *playlistIndexArr;
+extern char *currentSongPath;
+extern int playlistCurrentIndex;
 
 typedef struct thread_picture {
 	  SDL_Surface* display;
@@ -95,6 +102,7 @@ extern int SHUTDOWN_OPTION;
 extern int HELP_OPTION;
 extern int ITEMS_PER_PAGE_OPTION;
 extern char mediaFolder[1000];
+extern char musicPath[1000];
 extern int stripGames;
 extern int useCache;
 extern int shutDownEnabled;

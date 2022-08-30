@@ -68,6 +68,90 @@ char* search(char *arr[], int n, char *x) {
 	return "Not Found";
 }
 
+/* Function for filtering music files, it returns 1 if file should be included, otherwise returns 0 */
+static int songFilter(const struct dirent *dir) {
+	if (!dir) {
+		return 0;
+	}
+
+	if (dir->d_type == DT_REG) { // regular file
+		const char *ext = strrchr(dir->d_name,'.');
+		if (!ext || ext == dir->d_name) {
+			return 0;
+		} else if (strcmp(ext, ".ogg") == 0) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+// Simple function to shuffle an array
+void shuffle(int *array, size_t n) {
+    if (n > 1) {
+        size_t i;
+        for (i = 0; i < n - 1; i++) {
+          size_t j = i + rand() / (RAND_MAX / (n - i) + 1);
+          int t = array[j];
+          array[j] = array[i];
+          array[i] = t;
+        }
+    }
+}
+
+// Function to play next song using sdl mix playmusic
+void nextSong() {
+	playlistCurrentIndex++;
+	if (playlistCurrentIndex > playlistLength-1) {
+		playlistCurrentIndex = 0;
+	}
+	strcpy(currentSongPath, musicPath);
+	strcat(currentSongPath, playlist[playlistIndexArr[playlistCurrentIndex]]->d_name);
+
+	bgmusic = Mix_LoadMUS(currentSongPath);
+	Mix_PlayMusic(bgmusic,1);
+}
+
+// Function to init and start playing music using sdl mix playmusic
+void startMusic() {
+	playlistLength = scandir(musicPath, &playlist, songFilter, alphasort);
+
+	playlistIndexArr = (int*) malloc(sizeof(int) * playlistLength);
+	for(int i = 0; i <= playlistLength-1; i++){
+		playlistIndexArr[i] = i;
+	}
+
+	shuffle(playlistIndexArr, playlistLength);
+
+	currentSongPath = malloc(3000);
+	playlistCurrentIndex = 0;
+	strcpy(currentSongPath, musicPath);
+	strcat(currentSongPath, playlist[playlistIndexArr[playlistCurrentIndex]]->d_name);
+
+	Mix_OpenAudio(44100, AUDIO_S16, 2, 1024);
+	bgmusic = Mix_LoadMUS(currentSongPath);
+	
+	Mix_PlayMusic(bgmusic,1);
+	// set hook for playing another song after music finishes
+	Mix_HookMusicFinished(nextSong);
+}
+
+// Function to stop playing music and free related resources
+void stopMusic() {
+	Mix_HaltMusic();
+	Mix_FreeMusic(bgmusic);
+	Mix_CloseAudio();
+
+	// properly free scandir file list
+	for (int i = 0; i < playlistLength; i++) {
+  		free(playlist[i]);
+  	}
+	free(playlist);
+
+	free(currentSongPath);
+	free(playlistIndexArr);
+}
+
 char* getRomRealName(char *romName) {
 	char *nameTakenFromAlias;
 	char *strippedNameWithoutExtension = malloc(strlen(romName) + 1);
@@ -203,6 +287,10 @@ void quit() {
 	clearPicModeHideMenuTimer();
 	clearBatteryTimer();
 	freeResources();
+
+	// free background music resources
+	stopMusic();
+
 	if (shutDownEnabled) {
 #ifdef TARGET_PC
 		exit(0);
@@ -346,6 +434,10 @@ void executeCommandPC (char *executable, char *fileToBeExecutedWithFullPath) {
 	SDL_SetVideoMode(320, 240, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
 	SDL_ShowCursor(1);
 	freeResources();
+
+	// stop music and free resources
+	stopMusic();
+
 	SDL_ShowCursor(1);
 #ifndef TARGET_OD_BETA
 	resetFrameBuffer1();
@@ -397,6 +489,10 @@ void executeCommandPC (char *executable, char *fileToBeExecutedWithFullPath) {
 		strcat(exec, "\"");
 		logMessage("INFO","executeCommand",exec);
 		freeResources();
+
+		// stop music and free resources
+		stopMusic();
+
 		int ret = system(exec);
 		if(ret == -1) {
 			logMessage("ERROR","executeCommand","Error executing emulator");
@@ -408,6 +504,9 @@ void executeCommandPC (char *executable, char *fileToBeExecutedWithFullPath) {
 		initializeFonts();
 		initializeSettingsFonts();
 #endif
+	
+	// restart music
+	startMusic();
 }
 
 int isExtensionValid(char *extension, char *fileExtensions) {
