@@ -71,6 +71,7 @@ int performAction(struct Node *node) {
 				const int FRAME_DURATION_IN_MILLISECONDS = 1000/GAME_FPS;
 				Uint32 start_time;
 				for(int i=0;i<25;i++) {
+					start_time = SDL_GetTicks();
 					selectRandomGame();
 					if (fullscreenMode==0) {
 						fullscreenMode=1;

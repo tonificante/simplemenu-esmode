@@ -257,8 +257,11 @@ void launchGame(struct Rom *rom) {
 			strcpy(error,favorite.executable);
 			strcat(error,"-NOT FOUND");
 			generateError(error,0);
+			free(error);
 			return;
 		}
+		fclose(file);
+		free(error);
 		#ifndef TARGET_PC
 		executeCommand(favorite.emulatorFolder,favorite.executable,favorite.name, favorite.isConsoleApp);
 		#else
@@ -280,8 +283,11 @@ void launchGame(struct Rom *rom) {
 			strcpy(error,tempExecDirPlusFileName);
 			strcat(error,"-NOT FOUND");
 			generateError(error,0);
+			free(error);
 			return;
 		}
+		fclose(file);
+		free(error);
 		if (CURRENT_SECTION.onlyFileNamesNoExtension) {
 			#ifndef TARGET_PC
 			executeCommand(CURRENT_SECTION.emulatorDirectories[rom->preferences.emulatorDir], CURRENT_SECTION.executables[rom->preferences.emulator],getGameName(rom->name), rom->isConsoleApp);

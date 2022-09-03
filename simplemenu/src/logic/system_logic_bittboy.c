@@ -395,7 +395,8 @@ int getBatteryLevel() {
 	if (voltage_now > 3900) return 4;
 	if (voltage_now > 3800) return 3;
 	if (voltage_now > 3700) return 2;
-	if (voltage_now > 3520) return 1;
+	//if (voltage_now > 3520) return 1;
+	return 1;
 //	if (total>5) {
 //		return 5;
 //	}

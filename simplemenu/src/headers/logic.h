@@ -15,7 +15,6 @@ void loadGameList(int refresh);
 void loadFavoritesSectionGameList();
 int countFiles (char* directoryName, char *fileExtensions);
 int countGamesInPage();
-int countGamesInSection();
 int doesFavoriteExist(char *name);
 void setSectionsState(char *states);
 void determineStartingScreen(int sectionCount);

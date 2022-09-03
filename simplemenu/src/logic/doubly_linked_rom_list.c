@@ -36,7 +36,7 @@ void cleanListForSection(struct MenuSection *section) {
 		if (!current) {
 			break;
 		}
-		if (current->data->alias!=NULL&&strlen(current->data->alias)>1) {
+		if (current->data->alias!=NULL&&strlen(current->data->alias)>0) {
 			free(current->data->alias);
 		}
 		free(current->data->name);

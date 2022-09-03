@@ -99,8 +99,8 @@ int calculateProportionalSizeOrDistance(int number) {
 }
 
 int genericDrawTextOnScreen(TTF_Font *font, TTF_Font *outline, int x, int y, char *buf, int txtColor[], int align, int backgroundColor[], int shaded) {
-	SDL_Surface *msg;
-	SDL_Surface *msg1 = malloc(sizeof(msg));
+	SDL_Surface *msg = NULL;
+	SDL_Surface *msg1 = NULL;
 	char *bufCopy=malloc(strlen(buf)+1);
 	strcpy(bufCopy,buf);
 
@@ -155,10 +155,10 @@ int genericDrawTextOnScreen(TTF_Font *font, TTF_Font *outline, int x, int y, cha
 		SDL_Rect rect = {fontOutline, fontOutline, msg1->w, msg1->h};
 		SDL_BlitSurface(msg, NULL, msg1, &rect);
 		SDL_BlitSurface(msg1, NULL, screen, &rect2);
-		SDL_FreeSurface(msg1);
 	} else {
 		SDL_BlitSurface(msg, NULL, screen, &rect2);
 	}
+	SDL_FreeSurface(msg1);
 	SDL_FreeSurface(msg);
 	free(bufCopy);
 	return 1;
@@ -291,6 +291,7 @@ void drawCustomText1OnScreen(TTF_Font *font, TTF_Font *outline, int x, int y, co
 
 	SDL_FreeSurface(msg);
 	free(bufCopy);
+	free(bufCopy1);
 }
 
 void drawShadedSettingsOptionValueOnScreen(char *option, char *value, int position, int txtColor[], int txtBackgroundColor[]) {
@@ -1018,10 +1019,10 @@ void initializeDisplay() {
 	setenv("SDL_FBCON_DONT_CLEAR", "1", 0);
 	logMessage("INFO","initializeDisplay","maybe...");
 #ifdef TARGET_OD
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
-	screen = SDL_SetVideoMode(320, 240, 16, SDL_SWSURFACE);
-	SDL_FreeSurface(screen);
-	SDL_Quit();
+	//SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
+	//screen = SDL_SetVideoMode(320, 240, 16, SDL_SWSURFACE);
+	//SDL_FreeSurface(screen);
+	//SDL_Quit();
 #endif
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
 
@@ -1207,8 +1208,8 @@ void freeFonts() {
 	BIGFont = NULL;
 	TTF_CloseFont(outlineCustomHeaderFont);
 	outlineCustomHeaderFont = NULL;
-	//	TTF_CloseFont(outlineFont);
-	//	outlineFont = NULL;
+	TTF_CloseFont(outlineFont);
+	outlineFont = NULL;
 	TTF_CloseFont(outlineMiniFont);
 	outlineMiniFont = NULL;
 	TTF_CloseFont(outlineHeaderFont);

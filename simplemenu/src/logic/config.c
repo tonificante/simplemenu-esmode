@@ -79,6 +79,9 @@ void checkIfDefault() {
 	int c1, c2;
 	if (fp==NULL) {
 		shutDownEnabled=0;
+		if (fpScripts!=NULL) {
+			fclose(fpScripts);
+		}
 		return;
 	}
 	c1 = getc(fp);
@@ -692,7 +695,9 @@ void loadRomPreferences(struct Rom *rom) {
 	size_t len = 0;
 	char pathToPreferencesFilePlusFileName[800];
 	char pathToPreferencesFiles[800];
-	snprintf(pathToPreferencesFilePlusFileName,sizeof(pathToPreferencesFilePlusFileName),"%s/.simplemenu/rom_preferences/%s",home, getNameWithoutPath(rom->name));
+	char* nameWithoutPath = getNameWithoutPath(rom->name);
+	snprintf(pathToPreferencesFilePlusFileName,sizeof(pathToPreferencesFilePlusFileName),"%s/.simplemenu/rom_preferences/%s",home,nameWithoutPath);
+	free(nameWithoutPath);
 	snprintf(pathToPreferencesFiles,sizeof(pathToPreferencesFiles),"%s/.simplemenu/rom_preferences",home);
 
 	mkdir(pathToPreferencesFiles,0700);

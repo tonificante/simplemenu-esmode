@@ -93,8 +93,7 @@ void showLetter(struct Rom *rom) {
 		drawRectangleToScreen(SCREEN_WIDTH, rectangleHeight, rectangleX, rectangleY, (int[]){0,0,0});
 	}
 	char currentGameFirstLetter[2]="";
-	char *currentGame = malloc(500);
-	currentGame=getFileNameOrAlias(rom);
+	char *currentGame = getFileNameOrAlias(rom);
 	currentGameFirstLetter[0]=toupper(currentGame[0]);
 	currentGameFirstLetter[1]='\0';
 
@@ -304,9 +303,8 @@ void showConsole() {
 
 		if (displayGameCount) {
 			drawTextOnScreen(getGameCountFont(),NULL,calculateProportionalSizeOrDistance(gameCountX),calculateProportionalSizeOrDistance(gameCountY),gameCount,gameCountFontColor,alignment);
-			free(gameCount);
 		}
-
+		free(gameCount);
 	} else {
 		drawRectangleToScreen(SCREEN_WIDTH,SCREEN_HEIGHT,0,0,(int[]){180,180,180});
 		drawTextOnScreen(getFont(),NULL,SCREEN_WIDTH/2,SCREEN_HEIGHT/2,CURRENT_SECTION.sectionName,(int[]){0,0,0},VAlignMiddle|HAlignCenter);
@@ -316,10 +314,11 @@ void showConsole() {
 
 void displayGamePicture(struct Rom *rom) {
 	char *pictureWithFullPath=malloc(600);
-	char *tempGameName=malloc(300);
+	char *tempGameName;
 	char *originalGameName = NULL;
 	if (favoritesSectionSelected) {
 		if (favoritesSize == 0) {
+			free(pictureWithFullPath);
 			return;
 		}
 		struct Favorite favorite = favorites[CURRENT_GAME_NUMBER];
@@ -351,6 +350,8 @@ void displayGamePicture(struct Rom *rom) {
 	displayBackgroundPicture();
 	if (rom==NULL) {
 		displayCenteredImageOnScreen(pictureWithFullPath, tempGameName, 1,1);
+		free(pictureWithFullPath);
+		free(tempGameName);
 		return;
 	}
 	stripGameNameLeaveExtension(tempGameName);
@@ -444,10 +445,11 @@ void displayGamePicture(struct Rom *rom) {
 
 void displayGamePictureInMenu(struct Rom *rom) {
 	char *pictureWithFullPath=malloc(600);
-	char *tempGameName=malloc(300);
+	char *tempGameName = NULL;
 	char *originalGameName = NULL;
 	if (favoritesSectionSelected) {
 		if (favoritesSize == 0) {
+			free(pictureWithFullPath);
 			return;
 		}
 		struct Favorite favorite = favorites[CURRENT_GAME_NUMBER];

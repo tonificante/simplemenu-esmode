@@ -39,7 +39,7 @@ FILE* getCurrentSectionAliasFile() {
 }
 
 struct Favorite findFavorite(char *name) {
-	struct Favorite favorite;
+	struct Favorite favorite = {{0}, {0}, {0}, {0}, {0}, {0}, 0, 0};
 	for (int i = 0; i < favoritesSize; i++) {
 		favorite = favorites[i];
 		if (strcmp(favorite.name, name) == 0) {
@@ -237,8 +237,7 @@ char* getAlias(char *romName) {
 	if (strcmp(alias, romName) == 0) {
 		if (currentSectionNumber == favoritesSectionNumber) {
 			struct Favorite favorite = findFavorite(alias);
-			if (strlen(favorite.alias) < 2) {
-			}
+			strcpy(alias, favorite.alias);
 		} else {
 			char *ext = getExtension(romName);
 			if (strcmp(ext, ".opk") == 0) {
@@ -286,10 +285,49 @@ void quit() {
 	clearPicModeHideLogoTimer();
 	clearPicModeHideMenuTimer();
 	clearBatteryTimer();
-	freeResources();
 
 	// free background music resources
 	stopMusic();
+	Mix_Quit();
+
+	// free rest of resources
+	for (int i=0;i<menuSectionCounter;i++) {
+		if (menuSections[i].systemLogoSurface!=NULL) {
+			SDL_FreeSurface(menuSections[i].systemLogoSurface);
+			menuSections[i].systemLogoSurface = NULL;
+		}
+		if (menuSections[i].systemPictureSurface!=NULL) {
+			SDL_FreeSurface(menuSections[i].systemPictureSurface);
+			menuSections[i].systemPictureSurface = NULL;
+		}
+		if (menuSections[i].backgroundSurface!=NULL) {
+			SDL_FreeSurface(menuSections[i].backgroundSurface);
+			menuSections[i].backgroundSurface = NULL;
+		}
+	}
+
+	int sectionCount = (int) (sizeof(sectionGroups)/sizeof(sectionGroups[0]));
+	for (int i=0; i<sectionCount; i++) {
+		if (sectionGroups[i].groupBackgroundSurface==NULL) {
+			break;
+		}
+		SDL_FreeSurface(sectionGroups[i].groupBackgroundSurface);
+	}
+	
+	for (int i=0; i<menuSectionCounter; i++) {
+		cleanListForSection(&menuSections[i]);
+	}
+
+	for (int i=0; i<themeCounter; i++) {
+		if (themes[i]==NULL) {
+			break;
+		}
+		free(themes[i]);
+	}
+
+	TTF_Quit();
+	freeResources();
+	closeLogFile();
 
 	if (shutDownEnabled) {
 #ifdef TARGET_PC
@@ -521,20 +559,6 @@ int isExtensionValid(char *extension, char *fileExtensions) {
 		ptr = strtok(NULL, ",");
 	}
 	return (0);
-}
-
-int countGamesInSection() {
-	int gamesCounter = 0;
-	struct Node *currentGameNode = CURRENT_SECTION.head;
-	for (int i = 0; i <= MAX_GAMES_IN_SECTION; i++) {
-		if (currentGameNode != NULL) {
-			gamesCounter++;
-			currentGameNode = currentGameNode->next;
-		} else {
-			break;
-		}
-	}
-	return gamesCounter;
 }
 
 struct Rom* findGame(char *game) {
@@ -1131,10 +1155,10 @@ void loadGameList(int refresh) {
 			logMessage("INFO","loadGameList","Cleaned section list");
 		}
 		if (useCache==1) {
+			snprintf(sectionCacheName,sizeof(sectionCacheName),"%s/.simplemenu/tmp/%s.tmp",getenv("HOME"),CURRENT_SECTION.sectionName);
 			if (refresh) {
 				remove(sectionCacheName);
 			}
-			snprintf(sectionCacheName,sizeof(sectionCacheName),"%s/.simplemenu/tmp/%s.tmp",getenv("HOME"),CURRENT_SECTION.sectionName);
 			fp = fopen(sectionCacheName,"r");
 			if (fp!=NULL) {
 				logMessage("INFO","loadGameList","Using cache file");
@@ -1330,11 +1354,14 @@ void loadGameList(int refresh) {
 				if (fp!=NULL) {
 					fclose(fp);
 				}
+				for (int i=0;i<dirCounter;i++) {
+					free(dirs[i]);
+				}
 				return;
 			}
 		}
 		for (int i=0;i<dirCounter;i++) {
-			free (dirs[i]);
+			free(dirs[i]);
 		}
 
 //			if (strlen(CURRENT_SECTION.aliasFileName) > 0) {
