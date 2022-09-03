@@ -2,7 +2,9 @@
 make clean
 make PLATFORM=PC
 cd output
-#./simplemenu-x86
+./simplemenu-x86
 # check memory leak issues
-valgrind ./simplemenu-x86
+#valgrind --leak-check=full ./simplemenu-x86
+#valgrind --leak-check=full --show-leak-kinds=all ./simplemenu-x86
+#valgrind -s ./simplemenu-x86
 cd ..

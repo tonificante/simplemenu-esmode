@@ -46,7 +46,7 @@ else
 	LINKER = gcc
 	CFLAGS = -DTARGET_PC -DUSE_GZIP -O3 -fdata-sections -ffunction-sections -fPIC -flto -Wall -Wextra -std=gnu99
 	# add debug capabilities for use with valgrind
-	CFLAGS += -g
+	#CFLAGS += -g
 	LIBS += -lSDL -lSDL_image -lSDL_ttf -lSDL_mixer -lpthread -lz
 endif
 
