@@ -371,17 +371,28 @@ void drawNonShadedGameNameOnScreenCenter(char *buf, int position) {
 	drawTextOnScreen(font, outlineFont, centerRomList, position, buf, menuSections[currentSectionNumber].menuItemsFontColor, VAlignBottom | HAlignCenter);
 }
 
-void drawShadedGameNameOnScreenCustom(char *buf, int position){
-	char *temp = malloc(strlen(buf)+2);
-//	if (CURRENT_SECTION.currentGameNode->data->preferences.frequency == OC_UC) {
-//		strcpy(temp,"-");
-//		strcat(temp,buf);
-//	} else 	if (CURRENT_SECTION.currentGameNode->data->preferences.frequency == OC_OC) {
-//		strcpy(temp,"+");
-//		strcat(temp,buf);
-//	} else {
-		strcpy(temp,buf);
-//	}
+void drawShadedGameNameOnScreenCustom(char *buf, int positionY, int isFavorite){
+	int positionX = calculateProportionalSizeOrDistance(gameListX);
+	if (isFavorite) {
+		// draw small star in front of game title
+		displayGamelistMiniHeart(positionX, positionY + 2);
+
+		int heartBlockWidth = (calculateProportionalSizeOrDistance(fontSize) * 0.8) + 3;
+		positionX += heartBlockWidth;
+
+		int len = strlen(buf);
+		int maxWidth = MAGIC_NUMBER - heartBlockWidth;
+
+		int retW = 1;
+
+		TTF_SizeText(font, (const char *) buf, &retW, NULL);
+		while (retW > maxWidth) {
+			buf[len] = '\0';
+			len--;
+			TTF_SizeText(font, (const char *) buf, &retW, NULL);
+		}
+	}
+
 	int hAlign = 0;
 	if (gameListAlignment==0) {
 		hAlign = HAlignLeft;
@@ -391,21 +402,44 @@ void drawShadedGameNameOnScreenCustom(char *buf, int position){
 		hAlign = HAlignRight;
 	}
 	if (transparentShading) {
-		drawTextOnScreen(font, outlineFont, calculateProportionalSizeOrDistance(gameListX), position, temp, menuSections[currentSectionNumber].bodySelectedTextTextColor, VAlignBottom | hAlign);
+		drawTextOnScreen(font, outlineFont, positionX, positionY, buf, menuSections[currentSectionNumber].bodySelectedTextTextColor, VAlignBottom | hAlign);
 	} else {
-		drawShadedTextOnScreen(font, outlineFont, calculateProportionalSizeOrDistance(gameListX), position, temp, menuSections[currentSectionNumber].bodySelectedTextTextColor, VAlignBottom | hAlign, menuSections[currentSectionNumber].bodySelectedTextBackgroundColor);
+		drawShadedTextOnScreen(font, outlineFont, positionX, positionY, buf, menuSections[currentSectionNumber].bodySelectedTextTextColor, VAlignBottom | hAlign, menuSections[currentSectionNumber].bodySelectedTextBackgroundColor);
 	}
-	free(temp);
 }
 
-void drawNonShadedGameNameOnScreenCustom(char *buf, int position) {
-	if (gameListAlignment == 0) {
-		drawTextOnScreen(font, outlineFont, calculateProportionalSizeOrDistance(gameListX), position, buf, menuSections[currentSectionNumber].menuItemsFontColor, VAlignBottom | HAlignLeft);
-	} else if (gameListAlignment == 1) {
-		drawTextOnScreen(font, outlineFont, calculateProportionalSizeOrDistance(gameListX), position, buf, menuSections[currentSectionNumber].menuItemsFontColor, VAlignBottom | HAlignCenter);
-	} else {
-		drawTextOnScreen(font, outlineFont, calculateProportionalSizeOrDistance(gameListX), position, buf, menuSections[currentSectionNumber].menuItemsFontColor, VAlignBottom | HAlignRight);
+void drawNonShadedGameNameOnScreenCustom(char *buf, int positionY, int isFavorite) {
+	int positionX = calculateProportionalSizeOrDistance(gameListX);
+	if (isFavorite) {
+		// draw small star in front of game title
+		displayGamelistMiniHeart(positionX, positionY + 2);
+
+		int heartBlockWidth = (calculateProportionalSizeOrDistance(fontSize) * 0.8) + 3;
+		positionX += heartBlockWidth;
+
+		int len = strlen(buf);
+		int maxWidth = MAGIC_NUMBER - heartBlockWidth;
+
+		int retW = 1;
+
+		TTF_SizeText(font, (const char *) buf, &retW, NULL);
+		while (retW > maxWidth) {
+			buf[len] = '\0';
+			len--;
+			TTF_SizeText(font, (const char *) buf, &retW, NULL);
+		}
 	}
+
+	int hAlign = 0;
+	if (gameListAlignment == 0) {
+		hAlign = HAlignLeft;
+	} else if (gameListAlignment == 1) {
+		hAlign = HAlignCenter;
+	} else {
+		hAlign = HAlignRight;
+	}
+
+	drawTextOnScreen(font, outlineFont, positionX, positionY, buf, menuSections[currentSectionNumber].menuItemsFontColor, VAlignBottom | hAlign);
 }
 
 void drawNonShadedGameNameOnScreen(char *buf, int position) {
@@ -462,7 +496,7 @@ void drawPictureTextOnScreen(char *buf) {
 	if (CURRENT_SECTION.currentGameNode->data->preferences.frequency == OC_UC) {
 		strcpy(temp,"-");
 		strcat(temp,buf);
-	} else 	if (CURRENT_SECTION.currentGameNode->data->preferences.frequency == OC_OC) {
+	} else if (CURRENT_SECTION.currentGameNode->data->preferences.frequency == OC_OC) {
 		strcpy(temp,"+");
 		strcat(temp,buf);
 	} else {
@@ -671,13 +705,19 @@ int drawImage(SDL_Surface* display, SDL_Surface *image, int x, int y, int xx, in
 	// The original picture is no longer needed.
 	SDL_FreeSurface(image);
 	// Set it instead to the new image.
-	image =  sized;
+	image = sized;
 	SDL_Rect src, dest;
-	src.x = xx; src.y = yy; src.w = image->w; src.h = image->h; // size
-	dest.x =  x; dest.y = y; dest.w = image->w; dest.h = image->h;
-	if(transparent == 1 ) {
+	src.x = xx;
+	src.y = yy;
+	src.w = image->w;
+	src.h = image->h; // size
+	dest.x = x;
+	dest.y = y;
+	dest.w = image->w;
+	dest.h = image->h;
+	if (transparent == 1) {
 		//Set the color as transparent
-		SDL_SetColorKey(image,SDL_SRCCOLORKEY|SDL_RLEACCEL,SDL_MapRGB(image->format,0x0,0x0,0x0));
+		SDL_SetColorKey(image, SDL_SRCCOLORKEY | SDL_RLEACCEL, SDL_MapRGB(image->format, 0x0, 0x0, 0x0));
 	}
 	SDL_BlitSurface(image, &src, display, &dest);
 	SDL_FreeSurface(image);
@@ -763,23 +803,41 @@ void displayImageOnScreenCustom(char *fileName) {
 }
 
 void displayHeart(int x, int y) {
-	if(hideHeartTimer!=NULL) {
-		SDL_Surface *heart = IMG_Load(favoriteIndicator);
-		if (heart!=NULL) {
-			double wh = heart->w;
-			double hh = heart->h;
-			double ratioh = 0;  // Used for aspect ratio
-			int smoothing = 1;
-			ratioh = wh / hh;   // get ratio for scaling image
-			hh = calculateProportionalSizeOrDistance(heart->h);
-			if(hh!=heart->h) {
-				smoothing = 1;
-			}
-			wh = hh*ratioh;
-			smoothing = 1;
-			drawImage(screen, heart, x-(wh/2), y-(hh/2), 0, 0, wh, hh, 0, smoothing);
-		}
+	if (hideHeartTimer == NULL) {
+		return;
 	}
+	SDL_Surface *heart = IMG_Load(favoriteIndicator);
+	if (heart == NULL) {
+		return;
+	}
+
+	double wh = heart->w;
+	double hh = heart->h;
+	double ratioh = 0;  // Used for aspect ratio
+	int smoothing = 1;
+	
+	ratioh = wh / hh;   // get ratio for scaling image
+	hh = calculateProportionalSizeOrDistance(heart->h);
+	wh = hh * ratioh;
+
+	drawImage(screen, heart, x-(wh/2), y-(hh/2), 0, 0, wh, hh, 0, smoothing);
+}
+
+void displayGamelistMiniHeart(int x, int y) {
+	SDL_Surface *heart = IMG_Load(favoriteIndicator);
+	if (heart == NULL) {
+		return;
+	}
+
+	double wh = heart->w;
+	double hh = heart->h;
+	double ratioh = 0;  // Used for aspect ratio
+	int smoothing = 1;
+
+	ratioh = wh / hh;   // get ratio for scaling image
+	int height = calculateProportionalSizeOrDistance(fontSize) * 0.8;
+	int width = height * ratioh;
+	drawImage(screen, heart, x, y, 0, 0, width, height, 0, smoothing);
 }
 
 void* thread_func(void *picture) {

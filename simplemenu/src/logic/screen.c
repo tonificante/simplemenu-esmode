@@ -578,7 +578,7 @@ void drawGameList() {
 		}
 		struct Rom* rom = currentNode->data;
 		gamesInPage++;
-		if (rom->alias!=NULL &&  (strlen(rom->alias)>2)) {
+		if (rom->alias!=NULL && strlen(rom->alias)>2) {
 			nameWithoutExtension=malloc(strlen(rom->alias)+1);
 			strcpy(nameWithoutExtension,rom->alias);
 			if(stripGames) {
@@ -611,15 +611,20 @@ void drawGameList() {
 		if (rom->preferences.frequency == OC_UC) {
 			strcpy(temp,"-");
 			strcat(temp,buf);
-		} else 	if (rom->preferences.frequency == OC_OC) {
+		} else if (rom->preferences.frequency == OC_OC) {
 			strcpy(temp,"+");
 			strcat(temp,buf);
 		} else {
 			strcpy(temp,buf);
 		}
 
-		if (i==menuSections[currentSectionNumber].currentGameInPage) {
-			if(strlen(buf)>0) {
+		int isFavorite = 0;
+		if (doesFavoriteExist(rom->name)) {
+			isFavorite = 1;
+		}
+
+		if (strlen(buf) > 0) {
+			if (i == menuSections[currentSectionNumber].currentGameInPage) {
 				if(fullscreenMode) {
 					if(!isPicModeMenuHidden&&menuVisibleInFullscreenMode) {
 						drawShadedGameNameOnScreenPicMode(temp, nextLine);
@@ -627,26 +632,20 @@ void drawGameList() {
 				} else {
 					MAGIC_NUMBER = calculateProportionalSizeOrDistance(gameListWidth);
 					strcpy(currentGameNameBeingDisplayed,temp);
-					drawShadedGameNameOnScreenCustom(temp, nextLine);
+					drawShadedGameNameOnScreenCustom(temp, nextLine, isFavorite);
 				}
-			}
-		} else {
-			if(strlen(buf)>0) {
+			} else {
 				if(fullscreenMode) {
 					if(!isPicModeMenuHidden&&menuVisibleInFullscreenMode) {
 						drawNonShadedGameNameOnScreenPicMode(temp, nextLine);
 					}
 				} else {
 					MAGIC_NUMBER = calculateProportionalSizeOrDistance(gameListWidth);
-					drawNonShadedGameNameOnScreenCustom(temp, nextLine);
+					drawNonShadedGameNameOnScreenCustom(temp, nextLine, isFavorite);
 				}
 			}
 		}
-		if (!fullscreenMode) {
-			nextLine+=calculateProportionalSizeOrDistance(itemsSeparation);
-		} else {
-			nextLine+=calculateProportionalSizeOrDistance(itemsSeparation);
-		}
+		nextLine += calculateProportionalSizeOrDistance(itemsSeparation);
 		free(nameWithoutExtension);
 		free(buf);
 		free(temp);
