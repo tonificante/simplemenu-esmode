@@ -511,6 +511,10 @@ void executeCommandPC (char *executable, char *fileToBeExecutedWithFullPath) {
 			fileToBeExecutedWithFullPath, states, pSectionNumber, pReturnTo,
 			pPictureMode, NULL);
 #else
+		if (strcmp(executable, "#") == 0) {
+			// remove hashtag symbol from exec command if it is a standalone program
+			exec[0] = ' ';
+		}
 		strcat(exec, " \"");
 		strcat(exec, fileToBeExecutedWithFullPath);
 		strcat(exec, "\"");
