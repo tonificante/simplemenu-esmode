@@ -234,17 +234,6 @@ char* getAlias(char *romName) {
 	} else {
 		strcpy(alias, romName);
 	}
-	if (strcmp(alias, romName) == 0) {
-		if (currentSectionNumber == favoritesSectionNumber) {
-			struct Favorite favorite = findFavorite(alias);
-			strcpy(alias, favorite.alias);
-		} else {
-			char *ext = getExtension(romName);
-			if (strcmp(ext, ".opk") == 0) {
-				strcpy(alias, romName);
-			}
-		}
-	}
 	return alias;
 }
 
@@ -779,7 +768,7 @@ void mergeSort(struct Node **headRef) {
 void loadFavoritesSectionGameList() {
 	int gameInPage = 0;
 	int page = 0;
-	logMessage("ERROR", "loadFavoritesSectionGameList", "Setting total pages");
+	logMessage("INFO", "loadFavoritesSectionGameList", "Setting total pages");
 	FAVORITES_SECTION.totalPages=0;
 	FAVORITES_SECTION.gameCount=0;
 	cleanListForSection(&FAVORITES_SECTION);
@@ -788,7 +777,7 @@ void loadFavoritesSectionGameList() {
 			if (i != favoritesSize) {
 				page++;
 				gameInPage = 0;
-				logMessage("ERROR", "loadFavoritesSectionGameList",
+				logMessage("INFO", "loadFavoritesSectionGameList",
 						"Increasing total pages");
 				FAVORITES_SECTION.totalPages++;
 			}

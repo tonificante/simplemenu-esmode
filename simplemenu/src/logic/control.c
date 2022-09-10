@@ -79,7 +79,7 @@ void scrollDown() {
 }
 
 void scrollToGame(int gameNumber) {
-	if (CURRENT_SECTION.gameCount < gameNumber) {
+	if (gameNumber >= CURRENT_SECTION.gameCount) {
 		CURRENT_SECTION.currentGameInPage=0;
 		CURRENT_SECTION.currentPage=0;
 		CURRENT_SECTION.currentGameNode=CURRENT_SECTION.head;
@@ -108,19 +108,20 @@ int advanceSection() {
 		currentSectionNumber = -1;
 	}
 
+	logMessage("INFO","advanceSection","Advancing section");
+
 	do {
 		currentSectionNumber++;
 
 		if (currentSectionNumber == menuSectionCounter-1) {
-			// show favourites
-			showOrHideFavorites();
-			
-			if (CURRENT_SECTION.gameCount > 0) {
-				scrollToGame(CURRENT_SECTION.realCurrentGameNumber);
+			if (favoritesSize > 0) {
+				// show favourites
+				showOrHideFavorites();
+				return 1;
+			} else {
+				// no favourites, skip to next system
+				currentSectionNumber = 0;
 			}
-			pushEvent();
-
-			return 1;
 		}
 		if (!CURRENT_SECTION.counted && !CURRENT_SECTION.initialized) {
 			drawLoadingText();
@@ -159,15 +160,14 @@ int rewindSection() {
 		currentSectionNumber--;
 
 		if (currentSectionNumber == -1) {
-			// show favourites
-			showOrHideFavorites();
-			
-			if (CURRENT_SECTION.gameCount > 0) {
-				scrollToGame(CURRENT_SECTION.realCurrentGameNumber);
+			if (favoritesSize > 0) {
+				// show favourites
+				showOrHideFavorites();
+				return 1;
+			} else {
+				// no favourites, skip to previous system
+				currentSectionNumber = menuSectionCounter;
 			}
-			pushEvent();
-
-			return 1;
 		}
 		if (!CURRENT_SECTION.counted && !CURRENT_SECTION.initialized) {
 			drawLoadingText();
@@ -464,36 +464,85 @@ void showOrHideFavorites() {
 }
 
 void removeFavorite() {
-	favoritesChanged=1;
-	if (favoritesSize>0) {
-		#if defined TARGET_OD_BETA
-		Shake_Play(device, effect_id1);
-		#endif	
-		for (int i=CURRENT_GAME_NUMBER;i<favoritesSize;i++) {
-			strcpy(favorites[i].emulatorFolder,favorites[i+1].emulatorFolder);
-			strcpy(favorites[i].section,favorites[i+1].section);
-			strcpy(favorites[i].executable,favorites[i+1].executable);
-			strcpy(favorites[i].filesDirectory,favorites[i+1].filesDirectory);
-			strcpy(favorites[i].name,favorites[i+1].name);
-			strcpy(favorites[i].alias,favorites[i+1].alias);
-			favorites[i].isConsoleApp = favorites[i+1].isConsoleApp;
-		}
-		strcpy(favorites[favoritesSize-1].section,"\0");
-		strcpy(favorites[favoritesSize-1].emulatorFolder,"\0");
-		strcpy(favorites[favoritesSize-1].executable,"\0");
-		strcpy(favorites[favoritesSize-1].filesDirectory,"\0");
-		strcpy(favorites[favoritesSize-1].name,"\0");
-		strcpy(favorites[favoritesSize-1].alias,"\0");
-		favorites[favoritesSize-1].isConsoleApp = 0;
-		favoritesSize--;
-		if (CURRENT_GAME_NUMBER==favoritesSize) {
-			FAVORITES_SECTION.realCurrentGameNumber--;
-		}
-		loadFavoritesSectionGameList();
-		if(!isPicModeMenuHidden) {
-			resetPicModeHideMenuTimer();
+	favoritesChanged = 1;
+	if (favoritesSize <= 0) {
+		return;
+	}
+
+	int favoritesSectionWasSelected = favoritesSectionSelected;
+	int checkNamesWithoutExtension = 0;
+	char* selectedRomName = CURRENT_SECTION.currentGameNode->data->name;
+	char* selectedRomSection = NULL;
+
+	if (!favoritesSectionSelected && CURRENT_SECTION.onlyFileNamesNoExtension) {
+		checkNamesWithoutExtension = 1;
+		selectedRomName = getGameName(CURRENT_SECTION.currentGameNode->data->name);
+		if (strlen(CURRENT_SECTION.fantasyName)>0) {
+			// for comparison use, a reference to the string is okey, no need to duplicate the string in memory
+			selectedRomSection = CURRENT_SECTION.fantasyName;
+		} else {
+			selectedRomSection = CURRENT_SECTION.sectionName;
 		}
 	}
+	
+	// temporary set current section to favourites
+	favoritesSectionSelected = 1;
+	returnTo = currentSectionNumber;
+	currentSectionNumber = favoritesSectionNumber;
+
+	#if defined TARGET_OD_BETA
+	Shake_Play(device, effect_id1);
+	#endif
+		#endif	
+	#endif
+
+	int positionToRemove = 0;
+	// if we were not in favourites section, locate the game position at favourites section
+	if (!favoritesSectionWasSelected) {
+		for (int i=0;i<favoritesSize;i++) {
+			// skip to next if names don't match
+			if (strcmp(favorites[i].name, selectedRomName) != 0) {
+				continue;
+			}
+			// skip to next if matching names without extension but systems don't match
+			if (checkNamesWithoutExtension && strcmp(favorites[i].section, selectedRomSection) != 0) {
+				continue;
+			}
+			positionToRemove = i;
+			break;
+		}
+	} else {
+		positionToRemove = CURRENT_GAME_NUMBER;
+	}
+
+	for (int i=positionToRemove;i<favoritesSize;i++) {
+		strcpy(favorites[i].emulatorFolder,favorites[i+1].emulatorFolder);
+		strcpy(favorites[i].section,favorites[i+1].section);
+		strcpy(favorites[i].executable,favorites[i+1].executable);
+		strcpy(favorites[i].filesDirectory,favorites[i+1].filesDirectory);
+		strcpy(favorites[i].name,favorites[i+1].name);
+		strcpy(favorites[i].alias,favorites[i+1].alias);
+		favorites[i].isConsoleApp = favorites[i+1].isConsoleApp;
+	}
+	strcpy(favorites[favoritesSize-1].section,"\0");
+	strcpy(favorites[favoritesSize-1].emulatorFolder,"\0");
+	strcpy(favorites[favoritesSize-1].executable,"\0");
+	strcpy(favorites[favoritesSize-1].filesDirectory,"\0");
+	strcpy(favorites[favoritesSize-1].name,"\0");
+	strcpy(favorites[favoritesSize-1].alias,"\0");
+	favorites[favoritesSize-1].isConsoleApp = 0;
+	favoritesSize--;
+	if (!favoritesSectionWasSelected && CURRENT_GAME_NUMBER == favoritesSize) {
+		FAVORITES_SECTION.realCurrentGameNumber--;
+	}
+	loadFavoritesSectionGameList();
+	if(!isPicModeMenuHidden) {
+		resetPicModeHideMenuTimer();
+	}
+
+	// return back to original section
+	favoritesSectionSelected = favoritesSectionWasSelected;
+	currentSectionNumber = returnTo;
 }
 
 int msleep(long msec) {
@@ -517,39 +566,45 @@ int msleep(long msec) {
 
 void markAsFavorite(struct Rom *rom) {
 	favoritesChanged=1;
-	if (favoritesSize<FAVORITES_SIZE) {
-		if (!doesFavoriteExist(rom->name)) {
-			resetHideHeartTimer();
-			#if defined TARGET_OD_BETA
-			Shake_Play(device, effect_id);
-			msleep(200);
-			Shake_Play(device, effect_id);
-			#endif		
-			if (CURRENT_SECTION.onlyFileNamesNoExtension) {
-				strcpy(favorites[favoritesSize].name, getGameName(rom->name));
-			} else {
-				strcpy(favorites[favoritesSize].name, rom->name);
-			}
-			if(rom->alias!=NULL&&strlen(rom->alias)>2) {
-				strcpy(favorites[favoritesSize].alias, rom->alias);
-			} else {
-				favorites[favoritesSize].alias[0]=' ';
-			}
-			if (strlen(CURRENT_SECTION.fantasyName)>0) {
-				strcpy(favorites[favoritesSize].section,CURRENT_SECTION.fantasyName);
-			} else {
-				strcpy(favorites[favoritesSize].section,CURRENT_SECTION.sectionName);
-			}
-			loadRomPreferences(rom);
-			strcpy(favorites[favoritesSize].emulatorFolder,CURRENT_SECTION.emulatorDirectories[rom->preferences.emulatorDir]);
-			strcpy(favorites[favoritesSize].executable,CURRENT_SECTION.executables[rom->preferences.emulator]);
-			favorites[favoritesSize].frequency = rom->preferences.frequency;
-			strcpy(favorites[favoritesSize].filesDirectory,rom->directory);
-			favorites[favoritesSize].isConsoleApp = rom->isConsoleApp;
-			favoritesSize++;
-			qsort(favorites, favoritesSize, sizeof(struct Favorite), compareFavorites);
-		}
+	
+	if (favoritesSize >= FAVORITES_SIZE || doesFavoriteExist(rom->name)) {
+		return;
 	}
+
+	resetHideHeartTimer();
+	#if defined TARGET_OD_BETA
+	Shake_Play(device, effect_id);
+	msleep(200);
+	Shake_Play(device, effect_id);
+	#endif		
+			#endif		
+	#endif		
+	
+	if (CURRENT_SECTION.onlyFileNamesNoExtension) {
+		strcpy(favorites[favoritesSize].name, getGameName(rom->name));
+	} else {
+		strcpy(favorites[favoritesSize].name, rom->name);
+	}
+
+	if(rom->alias!=NULL&&strlen(rom->alias)>2) {
+		strcpy(favorites[favoritesSize].alias, rom->alias);
+	} else {
+		// use strcpy to add end string char, which prevents previous used chars from appearing in the alias
+		strcpy(favorites[favoritesSize].alias, " ");
+	}
+	if (strlen(CURRENT_SECTION.fantasyName)>0) {
+		strcpy(favorites[favoritesSize].section,CURRENT_SECTION.fantasyName);
+	} else {
+		strcpy(favorites[favoritesSize].section,CURRENT_SECTION.sectionName);
+	}
+	loadRomPreferences(rom);
+	strcpy(favorites[favoritesSize].emulatorFolder,CURRENT_SECTION.emulatorDirectories[rom->preferences.emulatorDir]);
+	strcpy(favorites[favoritesSize].executable,CURRENT_SECTION.executables[rom->preferences.emulator]);
+	favorites[favoritesSize].frequency = rom->preferences.frequency;
+	strcpy(favorites[favoritesSize].filesDirectory,rom->directory);
+	favorites[favoritesSize].isConsoleApp = rom->isConsoleApp;
+	favoritesSize++;
+	qsort(favorites, favoritesSize, sizeof(struct Favorite), compareFavorites);
 }
 
 int isSelectPressed() {

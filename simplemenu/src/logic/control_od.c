@@ -188,12 +188,26 @@ int performAction(struct Node *node) {
 			if(!isPicModeMenuHidden) {
 				resetPicModeHideMenuTimer();
 			}
-			if (!favoritesSectionSelected) {
+			if (!favoritesSectionSelected && !doesFavoriteExist(rom->name)) {
 				markAsFavorite(rom);
 			} else {
 				removeFavorite();
-				if(favoritesSize==0) {
-					showOrHideFavorites();
+				if (favoritesSize == 0 && currentSectionNumber == favoritesSectionNumber) {
+					int advanced = advanceSection();
+					if(advanced && currentSectionNumber!=favoritesSectionNumber) {
+						if (CURRENT_SECTION.backgroundSurface == NULL) {
+							logMessage("INFO","performAction","Loading system background");
+							CURRENT_SECTION.backgroundSurface = IMG_Load(CURRENT_SECTION.background);
+							resizeSectionBackground(&CURRENT_SECTION);
+							CURRENT_SECTION.systemPictureSurface = IMG_Load(CURRENT_SECTION.systemPicture);
+							resizeSectionSystemPicture(&CURRENT_SECTION);
+						}
+						logMessage("INFO","performAction","Advanced, loading game list");
+						loadGameList(0);
+					}
+					if(CURRENT_SECTION.gameCount>0) {
+						scrollToGame(CURRENT_SECTION.realCurrentGameNumber);
+					}
 				}
 			}
 			return 0;
