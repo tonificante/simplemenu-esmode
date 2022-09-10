@@ -914,7 +914,7 @@ void performSettingsChoosingAction() {
 		hotKeyPressed=0;
 	}
 	#endif
-	else if (keys[BTN_B]) {
+	else if (keys[BTN_B]||keys[BTN_START]) {
 
 //		pthread_cancel(clockThread);
 		#if defined TARGET_OD || defined TARGET_OD_BETA
