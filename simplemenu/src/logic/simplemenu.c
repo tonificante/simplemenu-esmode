@@ -259,7 +259,7 @@ int main() {
 			launchAutoStartGame(launchAtBootGame->rom, launchAtBootGame->emulatorDir, launchAtBootGame->emulator);
 		}
 	} else {
-		currentState=BROWSING_GAME_LIST;
+		currentState=SELECTING_SECTION;
 		pushEvent();
 	}
 	const int GAME_FPS=60;
