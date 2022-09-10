@@ -907,7 +907,7 @@ int findDirectoriesInDirectory(char *directory, char *files[], int i) {
 			if (strcmp(d_name, "..") != 0 && strcmp(d_name, ".") != 0) {
 				char path[PATH_MAX];
 				snprintf(path, PATH_MAX, "%s%s", directory, d_name);
-				files[i] = malloc(sizeof(path));
+				files[i] = malloc(sizeof(path) + 1);
 				strcpy(files[i], path);
 				i++;
 			}
@@ -1306,7 +1306,7 @@ void loadGameList(int refresh) {
 							logMessage("INFO","loadGameList", rom->name);
 							rom->alias=malloc(strlen(stolenFile.title)+1);
 							strcpy(rom->alias, stolenFile.title);
-							rom->isConsoleApp=stolenFile.isConsoleApp;
+							rom->isConsoleApp = stolenFile.isConsoleApp == 0 ? 0 : 1;
 						} else {
 							//it's a rom
 							strcpy(rom->name,files[i]);

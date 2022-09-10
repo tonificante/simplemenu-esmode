@@ -218,8 +218,13 @@ void launchAutoStartGame(struct Rom *rom, char *emuDir, char *emuExec) {
 		strcpy(error,tempExecDirPlusFileName);
 		strcat(error,"-NOT FOUND");
 		generateError(error,0);
+		free(error);
 		return;
 	}
+	if (file != NULL) {
+		fclose(file);
+	}
+	free(error);
 	logMessage("INFO","launchAutoStartGame","Saving last state");
 	saveLastState();
 	if (CURRENT_SECTION.onlyFileNamesNoExtension) {
@@ -260,7 +265,9 @@ void launchGame(struct Rom *rom) {
 			free(error);
 			return;
 		}
-		fclose(file);
+		if (file != NULL) {
+			fclose(file);
+		}
 		free(error);
 		#ifndef TARGET_PC
 		executeCommand(favorite.emulatorFolder,favorite.executable,favorite.name, favorite.isConsoleApp);
@@ -286,7 +293,9 @@ void launchGame(struct Rom *rom) {
 			free(error);
 			return;
 		}
-		fclose(file);
+		if (file != NULL) {
+			fclose(file);
+		}
 		free(error);
 		if (CURRENT_SECTION.onlyFileNamesNoExtension) {
 			#ifndef TARGET_PC
@@ -493,8 +502,6 @@ void removeFavorite() {
 	#if defined TARGET_OD_BETA
 	Shake_Play(device, effect_id1);
 	#endif
-		#endif	
-	#endif
 
 	int positionToRemove = 0;
 	// if we were not in favourites section, locate the game position at favourites section
@@ -576,8 +583,6 @@ void markAsFavorite(struct Rom *rom) {
 	Shake_Play(device, effect_id);
 	msleep(200);
 	Shake_Play(device, effect_id);
-	#endif		
-			#endif		
 	#endif		
 	
 	if (CURRENT_SECTION.onlyFileNamesNoExtension) {
