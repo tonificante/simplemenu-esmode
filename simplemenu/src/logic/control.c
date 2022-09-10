@@ -933,15 +933,13 @@ void performSettingsChoosingAction() {
 			execlp("./simplemenu","invoker",NULL);
 		}
 		#endif
-//		if (activeGroup!=beforeTryingToSwitchGroup) {
-//			currentState=CHOOSING_GROUP;
-//		} else {
-//			if(previousState==SELECTING_SECTION) {
-//				currentState=SELECTING_SECTION;
-//			} else {
-				currentState=BROWSING_GAME_LIST;
-//			}
-//		}
+
+		if (beforeSettingsState == SELECTING_SECTION) {
+			currentState = SELECTING_SECTION;
+		} else {
+			currentState = BROWSING_GAME_LIST;
+		}
+
 		if(themeChanged!=activeTheme) {
 			int headerAndFooterBackground[3]={37,50,56};
 			drawRectangleToScreen(SCREEN_WIDTH, calculateProportionalSizeOrDistance(22), 0, SCREEN_HEIGHT-calculateProportionalSizeOrDistance(22), headerAndFooterBackground);

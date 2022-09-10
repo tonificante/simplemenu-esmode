@@ -29,6 +29,7 @@ int hotKeyPressed;
 int aKeyComboWasPressed;
 int currentState;
 int previousState;
+int beforeSettingsState;
 int loading;
 int isPicModeMenuHidden;
 int isSuspended;

@@ -45,6 +45,7 @@ extern int aKeyComboWasPressed;
 extern int currentlySectionSwitching;
 extern int currentState;
 extern int previousState;
+extern int beforeSettingsState;
 extern int loading;
 extern int isPicModeMenuHidden;
 extern int isSuspended;
